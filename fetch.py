@@ -55,7 +55,7 @@ def fetch_links(iterations):
 # main function
 def main():
     parser = ArgumentParser(description="Perform proxy testing/URL list creation")
-    parser.add_argument("--urls", help="download and save urls ")
+    parser.add_argument("--urls", help="download and save urls ('./fetch.py --urls 1') ")
     parser.add_argument("--iterations", help="number of iterations")
 
     args = parser.parse_args()
