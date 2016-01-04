@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-import requests
 from argparse import ArgumentParser
+
+import requests
 import pickle
+from tqdm import tqdm
 
 limit = 50
 
@@ -18,32 +20,51 @@ def get_urls():
         pickle.dump(links, outfile)
 
 
-def fetch_links():
+def add_iterations(links, iterations):
+    if not iterations:
+        return links
+
+    new_links = []
+
+    for _ in range(iterations):
+        new_links.extend(links)
+
+    print("Set to %s iterations, total links: %s" % (iterations, len(new_links)))
+    return new_links
+
+
+def fetch_links(iterations):
     with open("links.p", "rb") as infile:
         links = pickle.load(infile)
+
+    links = add_iterations(links, iterations)
 
     import time
     start = time.time()
 
-    for link in links:
+    pbar = tqdm(links)
+    for link in pbar:
         response = requests.get(link)
+        pbar.set_description("Processing links.. (status %s)" %  response.status_code)
         # do something more with it?
-        print("url: %s, status code: %s" % (link, response.status_code))
+        # print("url: %s, status code: %s" % (link, response.status_code))
 
-    print(time.time() - start)
+    print("Time taken: %s" % (time.time() - start))
 
 
 # main function
 def main():
     parser = ArgumentParser(description="Perform proxy testing/URL list creation")
     parser.add_argument("--urls", help="download and save urls ")
+    parser.add_argument("--iterations", help="number of iterations")
+
     args = parser.parse_args()
 
     # get urls
     if args.urls:
         get_urls()
     else:
-        fetch_links()
+        fetch_links(int(args.iterations))
 
 
 if __name__ == "__main__":
