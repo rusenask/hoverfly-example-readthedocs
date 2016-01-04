@@ -26,7 +26,7 @@ def add_iterations(links, iterations):
 
     new_links = []
 
-    for _ in range(iterations):
+    for _ in range(int(iterations)):
         new_links.extend(links)
 
     print("Set to %s iterations, total links: %s" % (iterations, len(new_links)))
@@ -45,9 +45,7 @@ def fetch_links(iterations):
     pbar = tqdm(links)
     for link in pbar:
         response = requests.get(link)
-        pbar.set_description("Processing links.. (status %s)" %  response.status_code)
-        # do something more with it?
-        # print("url: %s, status code: %s" % (link, response.status_code))
+        pbar.set_description("Processing links.. (%s ms)" % (response.elapsed.microseconds/1000))
 
     print("Time taken: %s" % (time.time() - start))
 
@@ -64,7 +62,7 @@ def main():
     if args.urls:
         get_urls()
     else:
-        fetch_links(int(args.iterations))
+        fetch_links(args.iterations)
 
 
 if __name__ == "__main__":
